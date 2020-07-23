@@ -1,17 +1,14 @@
-FROM python:alpine3.7
-RUN apk update
-RUN apk add make automake gcc g++ subversion python3-dev
-COPY HR.csv HR.csv
-COPY hr_churn_data_pipeline.py hr_churn_data_pipeline.py
-COPY hr_churn_ml_training_pipeline.py hr_churn_ml_training_pipeline.py
-COPY hr_churn_ml_serving_pipeline.py hr_churn_ml_serving_pipeline.py
-COPY hr_churn_ml_serving_app_pipeline.py hr_churn_ml_serving_app_pipeline.py
+FROM python:3.8
+
+# Copy local code to the container image.
+ENV APP_HOME /app
+WORKDIR $APP_HOME
+COPY . ./
 RUN pip install --upgrade pip
-RUN pip install numpy==1.14.3
+RUN pip install numpy
 RUN pip install pandas
 RUN pip install sklearn
-RUN pip install pickle
-RUN pip install flask
-CMD python ./hr_churn_ml_training_pipeline.py HR.csv
-EXPOSE 5001
-CMD python ./hr_churn_ml_serving_app_pipeline.py 
+RUN pip install pickle-mixin
+RUN pip install Flask gunicorn
+#CMD python ./hr_churn_ml_training_pipeline.py HR.csv
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
