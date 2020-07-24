@@ -34,12 +34,12 @@ def serve_employee_churn():
     data = pd.DataFrame([explain_data] , columns = ['satisfaction_level', 'last_evaluation', 'number_project','average_montly_hours', 'time_spend_company', 'Work_accident','promotion_last_5years', 'Department', 'salary'])
     for feature in data:
         if data[feature].dtype == 'object' or data[feature].dtype == 'bool':
-            file = open(feature+'_le.pkl','rb')
+            file = open('assets/'+feature+'_le.pkl','rb')
             le = pickle.load(file)
             file.close()
             data[feature] =le.transform(data[feature])
             
-    file = open('HR_Churn_Model.pkl','rb')
+    file = open('assets/HR_Churn_Model.pkl','rb')
     model = pickle.load(file)
     file.close()
     
